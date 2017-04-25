@@ -31,6 +31,7 @@ app.get('/', function (req, res) {
 // for facebook verification
 app.get('/webhook/', function (req, res) {
 	if (req.query['hub.verify_token'] === 'my_voice_is_my_password_verify_me') {
+		
 		res.send(req.query['hub.challenge'])
 	} else {
 		res.send('Error, wrong token')
@@ -50,7 +51,10 @@ app.post('/webhook/', function (req, res) {
 				//sendGenericMessage(sender)
 				continue
 			}
-			sendTextMessage(sender,  text.substring(0, 200)+" nagy ")
+			// }
+			// let response = file_get_contents("https://graph.facebook.com/4?fields=name");  
+			// console.log(response)
+			sendTextMessage(sender,  text.substring(0, 200))
 		}
 		if (event.postback) {
 			let text = JSON.stringify(event.postback)
@@ -63,12 +67,21 @@ app.post('/webhook/', function (req, res) {
 
 
 // recommended to inject access tokens as environmental variables, e.g.
- //const token = process.env.FB_PAGE_ACCESS_TOKEN
-const token = "EAAFLEZCowld4BAN0i6ndo2pWQzZAWpZCEZAfPargmWgVwPy94N7mgStNM8AzBlldxfsJ5p0XTVzdu6smXyXw37Vxv6npwVJVyHpcXY2Oot84PuMLFiq6QWtLBcS6yRJdSPIJRM90i23K3HAkVok1Yn3kZCqZATCRbFZBDMphR0ZCfwZDZD"
+//const token = process.env.FB_PAGE_ACCESS_TOKEN
+const token = "EAAJaThsERQQBANsBRMF2wXIDbhIBbfcPGPHChAyOCsJbVlgvxqZCOJd1VoMZCgi8heri7Ppj9gC3DzQspLSHpoLswQvGNQVnbhdmWR4WsTlGvTXWHIzZBBM52cm8ZB6DV8haF5sGEllZAZBza27K7GhinpfZBkgki7z7MVIVgnWXgZDZD"
 
 function sendTextMessage(sender, text) {
 	let messageData = { text:text }
-	
+	let options ={
+		url: 'https://graph.facebook.com/v2.6/me/messages',
+		qs: {access_token:token},
+		method: 'POST',
+		json: {
+			recipient: {id:sender},
+			message: messageData,
+		}
+	}
+	console.log(options)
 	request({
 		url: 'https://graph.facebook.com/v2.6/me/messages',
 		qs: {access_token:token},
